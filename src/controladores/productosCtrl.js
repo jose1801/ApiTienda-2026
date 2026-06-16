@@ -1,4 +1,4 @@
-import { pool } from '../db.js'; // Tu conexión configurada a Aiven
+import { conmysql as pool } from '../db.js'; // 🌟 Solucionado: Mapeado con tu variable real conmysql
 
 // 1. GET - Obtener todos los productos activos
 export const getProductos = async (req, res) => {
@@ -39,7 +39,7 @@ export const actualizarProducto = async (req, res) => {
     }
 };
 
-// 4. DELETE - Eliminar un producto físicamente (o puedes hacer un borrado lógico)
+// 4. DELETE - Eliminar un producto físicamente
 export const eliminarProducto = async (req, res) => {
     const { id } = req.params;
     try {
