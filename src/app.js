@@ -41,6 +41,7 @@ app.use('/api/auth', authRoutes);
 // Rutas protegidas
 app.use('/api', verifyToken, clientesRoutes);
 app.use('/api', verifyToken, productosRoutes); 
+app.use('/api/ventas', require('./routes/ventas.routes'));
 
 app.use((req,res,next)=>{
     res.status(400).json({
