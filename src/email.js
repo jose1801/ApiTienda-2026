@@ -1,21 +1,16 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// 🌟 CONFIGURACIÓN NATIVA PARA EVITAR EL FIREWALL DE RENDER
-const transporador = nodemailer.createTransport({
-  service: 'gmail', // 🚀 Deja que Nodemailer maneje la ruta interna optimizada
-  auth: {
-    user: 'js8754527@gmail.com', // Tu correo de administración
-    pass: 'ltpjtrwftdtpwszx'       // Tu contraseña de aplicación de 16 letras
-  }
-});
+// 🌟 INICIALIZACIÓN AUTÉNTICA CON TU API KEY
+const resend = new Resend('re_G5YEbHQU_NLQiue4bSYsdFwfgdwYzMm5g'); 
 
 /**
- * Función para enviar el detalle de la compra al Administrador con Promesa
+ * Función para enviar el detalle de la compra al Administrador mediante API HTTP
  */
-export const enviarNotificacionCompra = (detallePedido, total) => {
-  return new Promise((resolve, reject) => {
+export const enviarNotificacionCompra = async (detallePedido, total) => {
+  try {
     let filasProductos = '';
     
+    // Recorremos el vector anidado del carrito con filtros de seguridad
     detallePedido.forEach(item => {
       const nombre = item.producto?.prod_nombre || item.prod_nombre || 'Producto';
       const precio = item.producto?.prod_precio || item.prod_precio || 0;
@@ -32,9 +27,12 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
       `;
     });
 
-    const opcionesCorreo = {
-      from: '"Sistema Inteligente de Gestión" <js8754527@gmail.com>',
-      to: 'js8754527@gmail.com',
+    console.log('🚀 Enviando correo de alerta mediante la API HTTP de Resend...');
+
+    // Despachamos el correo usando el canal web seguro
+    const { data, error } = await resend.emails.send({
+      from: 'onboarding@resend.dev', // Dominio de prueba obligatorio y gratuito de Resend
+      to: 'js8754527@gmail.com',     // Tu bandeja de Gmail donde te llegará el pedido
       subject: '🚨 ¡Nueva Compra Recibida en el Sistema!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff; color: #333333;">
@@ -62,18 +60,18 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
           <p style="font-size: 0.8rem; color: #888; margin-top: 30px; text-align: center;">Sistema Inteligente de Gestión y Ventas • UPSE 2026</p>
         </div>
       `
-    };
-
-    console.log('🚀 Despachando correo por el canal preconfigurado de Gmail...');
-
-    transporador.sendMail(opcionesCorreo, (error, info) => {
-      if (error) {
-        console.error('❌ Error real devuelto por Google:', error);
-        reject(error);
-      } else {
-        console.log('📧 Correo enviado con éxito e identificado por Google:', info.response);
-        resolve(info);
-      }
     });
-  });
+
+    if (error) {
+      console.error('❌ Resend rechazó el envío del correo:', error);
+      throw error;
+    }
+
+    console.log('📧 ¡Correo enviado volando por HTTP!', data);
+    return data;
+
+  } catch (err) {
+    console.error('❌ Error crítico en el módulo de correo con Resend:', err);
+    throw err;
+  }
 };
