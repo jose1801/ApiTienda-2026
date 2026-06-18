@@ -36,13 +36,13 @@ app.use('/uploads', express.static(uploadDir));
 
 // =============== RUTAS ===============
 
-// Ruta pública para hacer login
+// 1️⃣ RUTAS PÚBLICAS (Van arriba, sin candado de seguridad)
 app.use('/api/auth', authRoutes);
+app.use('/api/ventas', rutaVentas); // 🌟 MOVIDO AQUÍ: Ahora es pública y no le afectará el verifyToken
 
-// Rutas protegidas
+// 2️⃣ RUTAS PROTEGIDAS (Llevan el filtro de verificación)
 app.use('/api', verifyToken, clientesRoutes);
-app.use('/api', verifyToken, productosRoutes); 
-app.use('/api/ventas', rutaVentas);
+app.use('/api', verifyToken, productosRoutes);
 
 app.use((req,res,next)=>{
     res.status(400).json({
