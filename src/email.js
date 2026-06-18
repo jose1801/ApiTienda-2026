@@ -1,19 +1,11 @@
 import nodemailer from 'nodemailer';
 
-// 🌟 CONFIGURACIÓN TRIPLE BLINDADA CON IP DIRECTA (IPv4) FORZADA
+// 🌟 CONFIGURACIÓN NATIVA PARA EVITAR EL FIREWALL DE RENDER
 const transporador = nodemailer.createTransport({
-  // Colocamos la IP directa de uno de los servidores principales de SMTP de Google en IPv4
-  host: '74.125.142.108', 
-  port: 465,
-  secure: true, 
+  service: 'gmail', // 🚀 Deja que Nodemailer maneje la ruta interna optimizada
   auth: {
-    user: 'js8754527@gmail.com',
-    pass: 'ltpjtrwftdtpwszx'
-  },
-  tls: {
-    // Esencial: Al usar una IP, le decimos al certificado que valide contra el dominio real de Google
-    servername: 'smtp.gmail.com', 
-    rejectUnauthorized: false 
+    user: 'js8754527@gmail.com', // Tu correo de administración
+    pass: 'ltpjtrwftdtpwszx'       // Tu contraseña de aplicación de 16 letras
   }
 });
 
@@ -21,11 +13,9 @@ const transporador = nodemailer.createTransport({
  * Función para enviar el detalle de la compra al Administrador con Promesa
  */
 export const enviarNotificacionCompra = (detallePedido, total) => {
-  // ... (Todo el resto de tu código de armar las filas, las opciones del correo y el sendMail se queda EXACTAMENTE IGUAL) ...
   return new Promise((resolve, reject) => {
     let filasProductos = '';
     
-    // Recorremos el vector anidado del carrito con filtros de seguridad por si varía la estructura
     detallePedido.forEach(item => {
       const nombre = item.producto?.prod_nombre || item.prod_nombre || 'Producto';
       const precio = item.producto?.prod_precio || item.prod_precio || 0;
@@ -44,7 +34,7 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
 
     const opcionesCorreo = {
       from: '"Sistema Inteligente de Gestión" <js8754527@gmail.com>',
-      to: 'js8754527@gmail.com', // Te llegará a ti mismo como alerta inmediata
+      to: 'js8754527@gmail.com',
       subject: '🚨 ¡Nueva Compra Recibida en el Sistema!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff; color: #333333;">
@@ -74,7 +64,7 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
       `
     };
 
-    console.log('🚀 Intentando establecer conexión directa con SMTP de Google mediante IPv4...');
+    console.log('🚀 Despachando correo por el canal preconfigurado de Gmail...');
 
     transporador.sendMail(opcionesCorreo, (error, info) => {
       if (error) {
