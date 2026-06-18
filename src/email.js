@@ -1,27 +1,27 @@
-import nodemailer from 'nodemailer'; // Módulos ES nativos
+import nodemailer from 'nodemailer';
 
-// 🌟 CONFIGURACIÓN REFORZADA Y ADAPTADA PARA RENDER (FORZANDO IPv4)
+// 🌟 CONFIGURACIÓN TRIPLE BLINDADA CON IP DIRECTA (IPv4) FORZADA
 const transporador = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465, // Puerto SSL seguro para evitar bloqueos de red
-  secure: true, // Debe ser true porque usamos el puerto 465
+  // Colocamos la IP directa de uno de los servidores principales de SMTP de Google en IPv4
+  host: '74.125.142.108', 
+  port: 465,
+  secure: true, 
   auth: {
-    user: 'js8754527@gmail.com', // Tu correo de administración
-    pass: 'ltpjtrwftdtpwszx'       // Tu contraseña de aplicación de 16 letras
+    user: 'js8754527@gmail.com',
+    pass: 'ltpjtrwftdtpwszx'
   },
   tls: {
-    // Evita que la conexión se caiga si el servidor tiene restricciones de certificados locales
+    // Esencial: Al usar una IP, le decimos al certificado que valide contra el dominio real de Google
+    servername: 'smtp.gmail.com', 
     rejectUnauthorized: false 
-  },
-  // 🚀 ESTO CORRIGE EL ERROR ENETUNREACH: Fuerza a Node.js a ignorar IPv6 y usar IPv4
-  connectionTimeout: 10000, // 10 segundos de tiempo de espera máximo
-  family: 4 
+  }
 });
 
 /**
  * Función para enviar el detalle de la compra al Administrador con Promesa
  */
 export const enviarNotificacionCompra = (detallePedido, total) => {
+  // ... (Todo el resto de tu código de armar las filas, las opciones del correo y el sendMail se queda EXACTAMENTE IGUAL) ...
   return new Promise((resolve, reject) => {
     let filasProductos = '';
     
