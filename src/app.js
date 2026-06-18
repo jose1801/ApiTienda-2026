@@ -8,6 +8,7 @@ import clientesRoutes from './routes/clientes.routes.js';
 import productosRoutes from './routes/productos.routes.js'; 
 import authRoutes from './routes/auth.routes.js';
 import { verifyToken } from './jwt.middleware.js';
+import rutaVentas from './routes/ventas.routes.js'; // 🌟 Usamos import en lugar de require
 
 const app = express();
 
@@ -41,7 +42,7 @@ app.use('/api/auth', authRoutes);
 // Rutas protegidas
 app.use('/api', verifyToken, clientesRoutes);
 app.use('/api', verifyToken, productosRoutes); 
-app.use('/api/ventas', require('./routes/ventas.routes'));
+app.use('/api/ventas', rutaVentas);
 
 app.use((req,res,next)=>{
     res.status(400).json({

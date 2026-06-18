@@ -1,7 +1,7 @@
-// Importamos el enviador de correos que creamos en src
-const { enviarNotificacionCompra } = require('../email');
+// 🌟 CORRECCIÓN ES MODULES: Usamos import con la extensión .js explícita
+import { enviarNotificacionCompra } from '../email.js';
 
-const procesarNuevaVenta = async (req, res) => {
+export const procesarNuevaVenta = async (req, res) => {
   try {
     // El req.body recibe el vector anidado del carrito y el total desde el celular
     const { carrito, total } = req.body;
@@ -23,8 +23,4 @@ const procesarNuevaVenta = async (req, res) => {
     console.error('Error en ventasCtrl:', error);
     res.status(500).json({ OK: false, mensaje: 'Error interno en el servidor al procesar la venta' });
   }
-};
-
-module.exports = {
-  procesarNuevaVenta
 };

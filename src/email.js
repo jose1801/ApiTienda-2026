@@ -1,18 +1,18 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer'; // 🌟 Cambiado de require a import
 
-// 🌟 CONFIGURACIÓN AUTÉNTICA CON TUS CREDENCIALES
+// CONFIGURACIÓN CON TUS CREDENCIALES
 const transporador = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'js8754527@gmail.com', // Tu correo de administración
-    pass: 'ltpjtrwftdtpwszx'       // Tu contraseña de aplicación de 16 letras (sin espacios)
+    user: 'js8754527@gmail.com',
+    pass: 'ltpjtrwftdtpwszx'
   }
 });
 
 /**
  * Función para enviar el detalle de la compra al Administrador
  */
-const enviarNotificacionCompra = (detallePedido, total) => {
+export const enviarNotificacionCompra = (detallePedido, total) => { // 🌟 Cambiado a exportación directa
   let filasProductos = '';
   
   // Recorremos el vector anidado del carrito
@@ -29,7 +29,7 @@ const enviarNotificacionCompra = (detallePedido, total) => {
 
   const opcionesCorreo = {
     from: '"Sistema Inteligente de Gestión" <js8754527@gmail.com>',
-    to: 'js8754527@gmail.com', // Te llegará a ti mismo como alerta inmediata
+    to: 'js8754527@gmail.com',
     subject: '🚨 ¡Nueva Compra Recibida en el Sistema!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff; color: #333333;">
@@ -67,5 +67,3 @@ const enviarNotificacionCompra = (detallePedido, total) => {
     }
   });
 };
-
-module.exports = { enviarNotificacionCompra };
