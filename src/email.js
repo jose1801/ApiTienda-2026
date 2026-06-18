@@ -1,25 +1,32 @@
-import nodemailer from 'nodemailer'; // 🌟 Módulos ES nativos
+import nodemailer from 'nodemailer'; // Módulos ES nativos
 
-// CONFIGURACIÓN CON TUS CREDENCIALES
+// 🌟 CONFIGURACIÓN REFORZADA Y ADAPTADA PARA RENDER (FORZANDO IPv4)
 const transporador = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465, // Puerto SSL seguro para evitar bloqueos de red
+  secure: true, // Debe ser true porque usamos el puerto 465
   auth: {
-    user: 'js8754527@gmail.com',
-    pass: 'ltpjtrwftdtpwszx'
-  }
+    user: 'js8754527@gmail.com', // Tu correo de administración
+    pass: 'ltpjtrwftdtpwszx'       // Tu contraseña de aplicación de 16 letras
+  },
+  tls: {
+    // Evita que la conexión se caiga si el servidor tiene restricciones de certificados locales
+    rejectUnauthorized: false 
+  },
+  // 🚀 ESTO CORRIGE EL ERROR ENETUNREACH: Fuerza a Node.js a ignorar IPv6 y usar IPv4
+  connectionTimeout: 10000, // 10 segundos de tiempo de espera máximo
+  family: 4 
 });
 
 /**
  * Función para enviar el detalle de la compra al Administrador con Promesa
  */
 export const enviarNotificacionCompra = (detallePedido, total) => {
-  // 🌟 RETORNAMOS UNA PROMESA para que el controlador (async/await) pueda esperar la respuesta de Google
   return new Promise((resolve, reject) => {
     let filasProductos = '';
     
-    // Recorremos el vector anidado asegurando compatibilidad con la estructura de tu carrito
+    // Recorremos el vector anidado del carrito con filtros de seguridad por si varía la estructura
     detallePedido.forEach(item => {
-      // Filtro de seguridad: Lee desde item.producto (si existe) o directamente desde item
       const nombre = item.producto?.prod_nombre || item.prod_nombre || 'Producto';
       const precio = item.producto?.prod_precio || item.prod_precio || 0;
       const cantidad = item.cantidad || 0;
@@ -37,7 +44,7 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
 
     const opcionesCorreo = {
       from: '"Sistema Inteligente de Gestión" <js8754527@gmail.com>',
-      to: 'js8754527@gmail.com',
+      to: 'js8754527@gmail.com', // Te llegará a ti mismo como alerta inmediata
       subject: '🚨 ¡Nueva Compra Recibida en el Sistema!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff; color: #333333;">
@@ -67,14 +74,15 @@ export const enviarNotificacionCompra = (detallePedido, total) => {
       `
     };
 
-    // Enviamos el correo electrónico
+    console.log('🚀 Intentando establecer conexión directa con SMTP de Google mediante IPv4...');
+
     transporador.sendMail(opcionesCorreo, (error, info) => {
       if (error) {
         console.error('❌ Error real devuelto por Google:', error);
-        reject(error); // Rompe la promesa si falla la contraseña o los servidores
+        reject(error);
       } else {
         console.log('📧 Correo enviado con éxito e identificado por Google:', info.response);
-        resolve(info); // Completa la promesa correctamente
+        resolve(info);
       }
     });
   });
