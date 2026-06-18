@@ -32,7 +32,7 @@ export const enviarNotificacionCompra = async (detallePedido, total) => {
     // Despachamos el correo usando el canal web seguro
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev', // Dominio de prueba obligatorio y gratuito de Resend
-      to: 'js8754527@gmail.com',     // Tu bandeja de Gmail donde te llegará el pedido
+      to: 'jdaniel.salinas03@gmail.com', // 🌟 CORRECCIÓN CRUCIAL: Tu correo autorizado por Resend para Sandbox
       subject: '🚨 ¡Nueva Compra Recibida en el Sistema!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #ffffff; color: #333333;">
