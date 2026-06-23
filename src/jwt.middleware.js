@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './config.js';
 
 export const verifyToken = (req, res, next) => {
-    // 🌟 EXCEPCIÓN CORREGIDA: Detecta si la URL contiene la búsqueda del cliente, ignorando el prefijo
-    if (req.originalUrl.includes('/ventas/cliente/')) {
+    // 🌟 EXCEPCIÓN AMPLIADA: Deja pasar búsquedas Y la inserción de nuevos clientes de forma express
+    if (req.originalUrl.includes('/ventas/cliente/') || req.originalUrl.endsWith('/api/clientes')) {
         return next();
     }
 
@@ -15,13 +15,8 @@ export const verifyToken = (req, res, next) => {
     }
 
     try {
-        // El formato estándar es "Bearer <token>", por lo que extraemos solo el token
         const token = authHeader.split(' ')[1];
-        
-        // Verificamos el token usando nuestra clave secreta
         const decoded = jwt.verify(token, JWT_SECRET);
-        
-        // Guardamos los datos decodificados en el request para que puedan ser usados por los controladores
         req.user = decoded;
         next();
     } catch (error) {
@@ -29,5 +24,4 @@ export const verifyToken = (req, res, next) => {
     }
 };
 
-// 🌟 Mantenemos este alias por si acaso algún otro archivo de rutas lo importa con este nombre
 export const verificarToken = verifyToken;
