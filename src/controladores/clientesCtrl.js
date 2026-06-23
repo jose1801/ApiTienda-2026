@@ -91,3 +91,23 @@ export const deleteClientes = async (req, res) => {
         return res.status(500).json({ message: 'Error al eliminar el cliente' });
     }
 }
+// En tu controlador de Node.js (ej: clientesCtrl.js)
+export const buscarClientePorCedula = async (req, res) => {
+  try {
+    const { cedula } = req.params;
+    
+    // Consulta SQL a tu tabla 'cliente' de base2026
+    const [rows] = await db.query('SELECT * FROM cliente WHERE cli_cedula = ?', [cedula]);
+
+    if (rows.length > 0) {
+      // Si existe, retornamos el primer registro encontrado
+      return res.json({ encontrado: true, cliente: rows[0] });
+    } else {
+      // Si no existe, avisamos para que el frontend abra el formulario
+      return res.json({ encontrado: false });
+    }
+  } catch (error) {
+    console.error('Error al buscar cliente:', error);
+    return res.status(500).json({ encontrado: false, error: 'Error del servidor' });
+  }
+};
