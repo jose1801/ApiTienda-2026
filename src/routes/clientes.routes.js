@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import{getClientes,getclientesxid,postInsertarClientes,putClientes,patchClientes,deleteClientes}from '../controladores/clientesCtrl.js';
+import{getClientes,getclientesxid,postInsertarClientes,putClientes,patchClientes,deleteClientes,buscarClientePorCedula}from '../controladores/clientesCtrl.js';
 const router = Router();
 // armar nuestras rutas
 router.get('/clientes',getClientes);
