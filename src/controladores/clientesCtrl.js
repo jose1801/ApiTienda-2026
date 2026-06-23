@@ -92,22 +92,32 @@ export const deleteClientes = async (req, res) => {
     }
 }
 // En tu controlador de Node.js (ej: clientesCtrl.js)
+// Buscar cliente por identificación (cédula) de forma reactiva en base2026
 export const buscarClientePorCedula = async (req, res) => {
   try {
     const { cedula } = req.params;
     
-    // Consulta SQL a tu tabla 'cliente' de base2026
-    const [rows] = await db.query('SELECT * FROM cliente WHERE cli_cedula = ?', [cedula]);
+    // 🌟 CORREGIDO: Usamos 'conmysql', la tabla 'clientes' y la columna 'cli_identificacion'
+    const [rows] = await conmysql.query('SELECT * FROM clientes WHERE cli_identificacion = ?', [cedula]);
 
     if (rows.length > 0) {
-      // Si existe, retornamos el primer registro encontrado
-      return res.json({ encontrado: true, cliente: rows[0] });
+      const clienteOriginal = rows[0];
+
+      // Mapeamos temporalmente para que tu frontend reciba las propiedades con el nombre esperado
+      const clienteFormateado = {
+        cli_id: clienteOriginal.cli_id,
+        cli_nombre: clienteOriginal.cli_nombre,
+        cli_cedula: clienteOriginal.cli_identificacion, // Mapea cli_identificacion a cli_cedula
+        cli_correo: clienteOriginal.cli_correo || 'jdaniel.salinas03@gmail.com'
+      };
+
+      return res.json({ encontrado: true, cliente: clienteFormateado });
     } else {
-      // Si no existe, avisamos para que el frontend abra el formulario
+      // Si no existe en MySQL, le avisamos al Ionic
       return res.json({ encontrado: false });
     }
   } catch (error) {
-    console.error('Error al buscar cliente:', error);
-    return res.status(500).json({ encontrado: false, error: 'Error del servidor' });
+    console.error('❌ Error interno en buscarClientePorCedula:', error);
+    return res.status(500).json({ encontrado: false, error: 'Error interno del servidor' });
   }
 };
