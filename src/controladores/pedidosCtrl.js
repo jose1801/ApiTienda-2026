@@ -63,7 +63,7 @@ export const guardarPedido = async (req, res) => {
                 usr_id,
                 ped_estado
             )
-            VALUES (?,?,?,?)`,
+            VALUES (?,?,?)`,
             [
                 idCliente,
                 ped_fecha,
@@ -127,5 +127,68 @@ export const guardarPedido = async (req, res) => {
 
     } finally {
         conexion.release();
+    }
+};
+
+// 🚀 NUEVA FUNCIÓN AGREGADA: Para consultar el historial de pedidos de la tienda
+export const obtenerPedidos = async (req, res) => {
+    try {
+        // Consultamos uniendo las tablas para sacar los nombres de clientes y productos
+        const [rows] = await conmysql.query(`
+            SELECT 
+                p.ped_id,
+                p.ped_fecha,
+                p.ped_estado,
+                c.cli_nombre,
+                c.cli_identificacion,
+                d.prod_id,
+                pr.prod_nombre,
+                d.det_cantidad,
+                d.det_precio,
+                (d.det_cantidad * d.det_precio) AS subtotal
+            FROM pedidos p
+            INNER JOIN clientes c ON p.cli_id = c.cli_id
+            INNER JOIN pedidos_detalle d ON p.ped_id = d.ped_id
+            INNER JOIN productos pr ON d.prod_id = pr.prod_id
+            ORDER BY p.ped_id DESC
+        `);
+
+        // Agrupamos el resultado en un formato limpio (un pedido principal que contiene su arreglo de detalles)
+        const pedidosAgrupados = rows.reduce((acumulador, fila) => {
+            let pedido = acumulador.find(p => p.ped_id === fila.ped_id);
+            if (!pedido) {
+                pedido = {
+                    ped_id: fila.ped_id,
+                    ped_fecha: fila.ped_fecha,
+                    ped_estado: fila.ped_estado,
+                    cli_nombre: fila.cli_nombre,
+                    cli_identificacion: fila.cli_identificacion,
+                    total_pedido: 0,
+                    detalle: []
+                };
+                acumulador.push(pedido);
+            }
+            pedido.detalle.push({
+                prod_id: fila.prod_id,
+                prod_nombre: fila.prod_nombre,
+                det_cantidad: fila.det_cantidad,
+                det_precio: fila.det_precio,
+                subtotal: fila.subtotal
+            });
+            pedido.total_pedido += Number(fila.subtotal);
+            return acumulador;
+        }, []);
+
+        res.status(200).json({
+            ok: true,
+            pedidos: pedidosAgrupados
+        });
+
+    } catch (error) {
+        console.error("❌ Error en obtenerPedidos:", error);
+        res.status(500).json({
+            ok: false,
+            mensaje: "Error al obtener el historial de pedidos."
+        });
     }
 };
