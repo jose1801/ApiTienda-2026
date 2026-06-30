@@ -55,6 +55,7 @@ export const guardarPedido = async (req, res) => {
         }
 
         // Pedido
+        // 🚀 CORREGIDO: 4 columnas requerían exactamente 4 marcadores de posición (?)
         const [pedido] = await conexion.query(
             `INSERT INTO pedidos
             (
@@ -63,7 +64,7 @@ export const guardarPedido = async (req, res) => {
                 usr_id,
                 ped_estado
             )
-            VALUES (?,?,?)`,
+            VALUES (?,?,?,?)`, // 🌟 Se agregó el "?" que faltaba aquí
             [
                 idCliente,
                 ped_fecha,
