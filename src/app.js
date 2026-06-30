@@ -9,6 +9,7 @@ import productosRoutes from './routes/productos.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import { verifyToken } from './jwt.middleware.js';
 import rutaVentas from './routes/ventas.routes.js'; // 🌟 Usamos import en lugar de require
+import pedidosRoutes from './routes/pedidos.routes.js'; // AGREGA ESTA LÍNEA
 
 const app = express();
 
@@ -39,7 +40,7 @@ app.use('/uploads', express.static(uploadDir));
 // 1️⃣ RUTAS PÚBLICAS (Van arriba, sin candado de seguridad)
 app.use('/api/auth', authRoutes);
 app.use('/api/ventas', rutaVentas); // 🌟 MOVIDO AQUÍ: Ahora es pública y no le afectará el verifyToken
-
+app.use('/api', pedidosRoutes); // AGREGA ESTA LÍNEA (Tu endpoint quedará como: /api/pedidos)
 // 2️⃣ RUTAS PROTEGIDAS (Llevan el filtro de verificación)
 app.use('/api', verifyToken, clientesRoutes);
 app.use('/api', verifyToken, productosRoutes);
